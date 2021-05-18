@@ -1,0 +1,296 @@
+#include <iostream>
+#include <cstdlib>//srand
+#include <time.h> //numeros aleatorios
+
+using namespace std;
+
+int const fila = 4;
+int const columna= 6;
+int tablero[fila][columna];
+string tableroTrampas[fila][columna];
+
+
+int menuPrincipal();
+void generaTablero();
+void trampas();
+void imprimeTablero(string, int , int);
+int dado();
+int revisarTrampa(int posicion,int tablero[fila][columna], string tableroTrampas[fila][columna]);
+
+
+
+int main()
+{
+    menuPrincipal();
+}
+
+
+int menuPrincipal()
+{
+    setlocale(LC_ALL, "");// Funcion que permite el uso de tildes en el texto de impresion a consola
+    int Opcion=0;
+
+    string nombre;
+    int posicionJugador=0;
+    int posicionCompu=0;
+    int valorDado=0;
+
+    do
+    {
+        cout <<"########################" << endl;
+        cout <<"# Bienvenido al Juego  #" << endl;
+        cout <<"#      Figuras         #" << endl;
+        cout <<"########################" << endl;
+        cout <<"" << endl;
+        cout <<"Seleccione un número según la opción deseada"<< endl;
+        cout <<"" << endl;
+        cout <<"1. Juego Nuevo" << endl;
+        cout <<"2. Salir" << endl;
+        cout <<"" << endl;
+        cout << "Por Favor ingrese la opción: ";
+        cin >> Opcion;
+
+        switch (Opcion)
+        {
+        case 1:
+            posicionJugador=1;
+            posicionCompu=1;
+            valorDado=0;
+            system("cls");
+            generaTablero();
+            trampas();
+            cout <<"1. Juego Nuevo " << endl;
+            cout <<"" << endl;
+
+            cout <<"Por favor ingrese su nombre:" << endl;
+            cin >> nombre;
+            system("cls");
+            imprimeTablero(nombre,posicionJugador,posicionCompu);
+
+            do
+            {
+
+                ////Turno Jugador
+                cout <<"Turno:" << nombre << endl;
+                system("pause");
+                valorDado= dado();
+                cout <<"Pasa de posicion: " << posicionJugador << "  a  la posicion: " << valorDado  + posicionJugador << endl;
+                posicionJugador= valorDado  + posicionJugador;
+                posicionJugador = revisarTrampa(posicionJugador,tablero,tableroTrampas);
+
+                system("cls");
+                imprimeTablero(nombre,posicionJugador,posicionCompu);
+
+                if (posicionJugador >24)
+                {
+                    cout << "\n" << endl;
+                    cout <<"Felicidades!!!!!" << " " + nombre <<" has GANADO!!!" <<endl;
+                    break;
+                }
+
+                //Turno Computadora
+                cout <<"Turno:" << "Cumputadora"  << endl;
+                system("pause");
+                valorDado= dado();
+                cout <<"Pasa de posicion: " << posicionJugador << "  a  la posicion: " << valorDado  + posicionJugador << endl;
+                posicionCompu= valorDado + posicionCompu ;
+                posicionCompu = revisarTrampa(posicionCompu,tablero,tableroTrampas);
+
+                system("cls");
+                imprimeTablero(nombre,posicionJugador,posicionCompu);
+
+
+
+            }
+            while(posicionCompu<=24);
+
+            if (posicionCompu >24)
+                {
+                    cout << "\n" << endl;
+                    cout <<"Lastima!!!!!" << " " + nombre <<" has Perdido!!!" <<endl;
+                }
+
+            system("pause");
+            system("cls");
+
+            break;
+
+        case 2:
+            system("cls");
+            cout << "Juego Figuras por Kenneth Carvajal" << endl;
+            cout << "Curso Introducción a la Programación UNED - Examen 1" << endl;
+            cout << "Gracias!" << endl;
+            system("pause");
+            break;
+
+        default:
+            system("cls");
+            cout << "Error" << endl;
+            cout << "" << endl;
+            cout << "ATENCIÓN: OPCIÓN NO VÁLIDA" << endl;
+            cout << "Por favor ingrese el digito según la opción" << endl;
+            cout << "La opción a seleccionar debe ser entre 1 o  2" << endl;
+            system("pause");
+            system("cls");
+            break;
+        }
+    }
+    while(Opcion!= 2 );
+    return 0;
+}
+
+
+void generaTablero()
+{
+    int numeroCasilla=0;
+    for (int i=0; i<fila; i++)
+    {
+        for (int j=0; j<columna; j++)
+        {
+            tablero[i][j] = (numeroCasilla = numeroCasilla + 1);
+            //cout << "\t"<< tablero[i][j] ;
+        }
+        //cout << "\n";
+    }
+}
+
+void trampas()
+{
+    srand(time(NULL));
+    int cantidadTrampas=10;
+    int tipoTrampa = 0;
+    string letraTrampa="";
+
+    int k =0;
+
+    for (int i=0; i<fila; i++)
+    {
+        for (int j=0; j<columna; j++)
+        {
+            tableroTrampas[i][j] = ">|<";
+        }
+    }
+
+    for ( k=0; k<cantidadTrampas; k++)
+    {
+        int filaT = rand()%4;
+        int columnaT = rand()%6;
+
+        tipoTrampa=rand()%4;
+        //cout << fila << "\t"<< columna<< "\t" << tipoTrampa << "\n";
+
+        if (tipoTrampa == 0)
+        {
+            letraTrampa= "-C-";
+        }
+        if (tipoTrampa == 1)
+        {
+            letraTrampa="-T-";
+        }
+        if (tipoTrampa ==2)
+        {
+            letraTrampa="-R-";
+        }
+        if (tipoTrampa == 3)
+        {
+            letraTrampa="-P-";
+        }
+        if ( tableroTrampas[filaT][columnaT] == ">|<")
+        {
+            tableroTrampas[filaT][columnaT] =letraTrampa;
+        }
+        else
+        {
+            k--;
+        }
+    }
+}
+
+int dado(){
+    srand(time(NULL));
+    int dado = rand()%5 + 1;
+    cout <<"Dados : " << dado << endl;
+    return dado;
+
+}
+
+void imprimeTablero(string nombre , int posicionJugador, int posicionCompu )
+{
+    cout <<"Bienvenido:  " << nombre <<endl;
+    cout <<"" << endl;
+    for (int i=0; i<fila; i++)
+    {
+        for (int j=0; j<columna; j++)
+        {
+            cout << "\t"<< tableroTrampas[i][j] ;
+        }
+        cout << "\n";
+
+        for (int k=0; k<columna; k++)
+        {
+            cout << "\t "<< tablero[i][k] ;
+        }
+        cout << "\n\n";
+    }
+
+      cout  << "Posición: " << nombre << " :" << posicionJugador <<"\t" << "Computadora:" << posicionCompu <<endl ;
+      cout << "\n\n";
+
+}
+
+int revisarTrampa(int posicion, int tablero[fila][columna], string tableroTrampas[fila][columna])
+{
+
+    for (int i = 0; i < fila; i++)
+    {
+        for (int j = 0; j < columna; j++)
+        {
+            if (tablero[i][j] == posicion)
+            {
+                //cout << "posicion" << posicion << "encontrada en :"<< i << " y en :" <<  j <<endl;
+
+                //Círculo – avanza una posición más.
+                if(tableroTrampas[i][j] == "-C-")
+                {
+                    cout << "Posicion: " << posicion << "\t"<<"Círculo – avanza una posición más." <<endl;
+                    cout <<"Pasa de posicion: " << posicion << "  a  la posicion: " << posicion +1 << endl;
+                    system("pause");
+                    return posicion = posicion +1;
+
+                }
+
+                //Triángulo – vuelve a tirar el dado.
+                if(tableroTrampas[i][j] == "-T-")
+                {
+                    cout << "Posicion: " << posicion << "\t"<<"Triángulo – vuelve a tirar el dado." <<endl;
+                    system("pause");
+                    return posicion = dado() + posicion;
+
+                }
+
+                //Rombo – retrocede dos posiciones
+                if(tableroTrampas[i][j] == "-R-")
+                {
+                    cout << "Posicion: " << posicion << "\t"<<"Rombo – retrocede dos posiciones." <<endl;
+                    cout <<"Pasa de posicion: " << posicion << "  a  la posicion: " << posicion -2 << endl;
+                    system("pause");
+                    return posicion = posicion -2 ;
+
+                }
+
+                //Puerta – Vuelve a comenzar desde el inicio.
+                if(tableroTrampas[i][j] == "-P-")
+                {
+                    cout << "Posicion: " << posicion << "\t"<<"Puerta – Vuelve a comenzar desde el inicio." <<endl;
+                    cout <<"Pasa de posicion: " << posicion << "  a  la posicion: 1" << endl;
+                    system("pause");
+                    return posicion = 1 ;
+
+                }
+            }
+        }
+    }
+    return posicion;
+}
+
+
